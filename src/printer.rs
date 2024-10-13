@@ -3,10 +3,7 @@ use std::collections::VecDeque;
 use tree_sitter::TreeCursor;
 
 use crate::{
-    context::Context,
-    layouts::{self, KeyboardLayoutType},
-    parser::parse,
-    utils::{get_text, lookahead, lookbehind, pad_right, print_indent, sep},
+    config::Config, context::Context, layouts::{self, KeyboardLayoutType}, parser::parse, utils::{get_text, lookahead, lookbehind, pad_right, print_indent, sep}
 };
 
 fn is_preproc(n: &tree_sitter::Node) -> bool {
@@ -372,12 +369,23 @@ fn print_bindings(
     cursor.goto_parent();
 }
 
-pub fn print(source: &String, layout: &KeyboardLayoutType) -> String {
+fn node_kind_changed(cursor: &TreeCursor) -> bool {
+    let current = cursor.node().kind();
+    let previous = match lookbehind(cursor) {
+        Some(node) => node.kind(),
+        None => return false,
+    };
+
+    previous != "comment" && current != previous
+        || (current == "node" && previous == "node")
+}
+
+pub fn print(source: &String, config: &Config) -> String {
     let mut writer = String::new();
     let tree = parse(source.clone());
     let mut cursor = tree.walk();
 
-    let layout = layouts::get_layout(layout);
+    let layout = layouts::get_layout(&config.layout);
     let ctx =
         Context { indent: 0, bindings: false, keymap: false, layout: &layout };
 
@@ -387,6 +395,13 @@ pub fn print(source: &String, layout: &KeyboardLayoutType) -> String {
     traverse(&mut writer, &source, &mut cursor, &ctx);
 
     while cursor.goto_next_sibling() {
+        if config.separate_sections
+            && !writer.ends_with("\n\n")
+            && node_kind_changed(&cursor)
+        {
+            writer.push('\n');
+        }
+
         traverse(&mut writer, &source, &mut cursor, &ctx);
     }
 

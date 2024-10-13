@@ -11,9 +11,15 @@ mod constants;
 #[derive(Deserialize)]
 pub struct Config {
     pub layout: KeyboardLayoutType,
+    /// Print a newline between each section
+    pub separate_sections: bool,
 }
 
 impl Config {
+    pub fn with_defaults(layout: KeyboardLayoutType) -> Self {
+        Self { layout, separate_sections: false }
+    }
+
     pub fn parse(cwd: &Path, config_file: &Option<PathBuf>) -> Self {
         let rc_file = match config_file {
             Some(file) => file,

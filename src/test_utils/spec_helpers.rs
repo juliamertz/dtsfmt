@@ -2,7 +2,7 @@ use console::Style;
 use similar::{ChangeTag, TextDiff};
 use std::{fmt::Display, path::Path};
 
-use crate::{layouts::KeyboardLayoutType, printer::print};
+use crate::{config::Config, layouts::KeyboardLayoutType, printer::print};
 
 use super::get_specs_in_dir;
 
@@ -48,7 +48,10 @@ pub fn run_specs(directory_path: &Path) {
     let mut failed_tests = Vec::new();
 
     for (_, spec) in specs {
-        let result = print(&spec.file_text, &KeyboardLayoutType::Adv360);
+        let result = print(
+            &spec.file_text,
+            &Config::with_defaults(KeyboardLayoutType::Adv360),
+        );
 
         if result != spec.expected_text {
             failed_tests.push(FailedTestResult {
