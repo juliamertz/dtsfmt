@@ -29,11 +29,15 @@ dtsfmt .
 
 ## Config
 
-The following confirmation options are available for dtsfmt. Confirmation should
+The following configuration options are available for dtsfmt. Configuration should
 be added to a `.dtsfmtrc.toml` file at the root of your project.
 
 ```toml
-layout = "kinesis:adv360"
+layout = "kinesis:adv360" # required
+
+[options]
+separate_sections = false # print newline between sections
+indent_size = 2
 ```
 
 ## Ignoring code
