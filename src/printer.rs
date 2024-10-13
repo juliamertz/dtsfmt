@@ -44,6 +44,12 @@ fn traverse(
                 false => writer.push_str(comment),
             }
 
+            if comment.contains("dtsfmt-ignore") {
+                writer.push('\n');
+                cursor.goto_next_sibling();
+                print_indent(writer, ctx);
+                writer.push_str(get_text(source, cursor));
+            }
             writer.push('\n');
         }
         "preproc_include" => {

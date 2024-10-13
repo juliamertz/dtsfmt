@@ -41,6 +41,9 @@ layout = "kinesis:adv360"
 You can add a `.dtsfmtignore` file at the root of your project to exclude files
 and paths from formatting. This file follows the same rules as `.gitignore`.
 
+To ignore specific code blocks add a comment starting with `dtsfmt-ignore`,
+this will skip formatting for the next node.
+
 ## Flags
 
 ### `--check`
