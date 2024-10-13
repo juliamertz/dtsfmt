@@ -26,9 +26,11 @@ fn traverse(
 
     match node.kind() {
         "comment" => {
-            // Add a newline before the comment if the previous node is not a comment
-            if lookbehind(cursor).map_or(false, |n| n.kind() != "comment") {
-                sep(writer);
+            if !writer.ends_with('\n') {
+                // Add a newline before the comment if the previous node is not a comment
+                if lookbehind(cursor).map_or(false, |n| n.kind() != "comment") {
+                    sep(writer);
+                }
             }
 
             print_indent(writer, ctx);
