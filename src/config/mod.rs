@@ -1,19 +1,29 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::fs;
+use std::path::{Path, PathBuf};
+
+use serde::Deserialize;
 
 use crate::layouts::KeyboardLayoutType;
-use serde::Deserialize;
 
 mod constants;
 
 #[derive(Deserialize)]
 pub struct Config {
     pub layout: KeyboardLayoutType,
-    /// Print a newline between each section
-    pub separate_sections: Option<bool>,
-    pub indent_size: Option<usize>,
+    #[serde(default)]
+    pub options: FormatterOptions,
+}
+
+#[derive(Deserialize)]
+pub struct FormatterOptions {
+    pub separate_sections: bool,
+    pub indent_size: usize,
+}
+
+impl Default for FormatterOptions {
+    fn default() -> Self {
+        Self { separate_sections: false, indent_size: 2 }
+    }
 }
 
 impl Config {
@@ -29,7 +39,7 @@ impl Config {
     }
 
     pub fn with_defaults(layout: KeyboardLayoutType) -> Self {
-        Self { layout, indent_size: Some(2), separate_sections: Some(false) }
+        Self { layout, options: FormatterOptions::default() }
     }
 }
 

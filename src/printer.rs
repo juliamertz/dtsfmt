@@ -396,7 +396,7 @@ pub fn print(source: &String, config: &Config) -> String {
 
     let layout = layouts::get_layout(&config.layout);
     let ctx = Context {
-        indent_size: config.indent_size.unwrap_or(2),
+        indent_size: config.options.indent_size,
         depth: 0,
         bindings: false,
         keymap: false,
@@ -409,7 +409,7 @@ pub fn print(source: &String, config: &Config) -> String {
     traverse(&mut writer, &source, &mut cursor, &ctx);
 
     while cursor.goto_next_sibling() {
-        if config.separate_sections.unwrap_or(false)
+        if config.options.separate_sections
             && !writer.ends_with("\n\n")
             && node_kind_changed(&cursor)
         {
