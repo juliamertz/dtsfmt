@@ -396,11 +396,11 @@ pub fn print(source: &String, config: &Config) -> String {
 
     let layout = layouts::get_layout(&config.layout);
     let ctx = Context {
-        indent_size: config.options.indent_size,
         depth: 0,
         bindings: false,
         keymap: false,
         layout: &layout,
+        options: &config.options
     };
 
     // The first node is the root document node, so we have to traverse all it's

@@ -16,13 +16,17 @@ pub struct Config {
 
 #[derive(Deserialize)]
 pub struct FormatterOptions {
+    #[serde(default)]
     pub separate_sections: bool,
+    #[serde(default)]
     pub indent_size: usize,
+    #[serde(default)]
+    pub tabs: bool,
 }
 
 impl Default for FormatterOptions {
     fn default() -> Self {
-        Self { separate_sections: false, indent_size: 2 }
+        Self { separate_sections: false, indent_size: 2, tabs: true }
     }
 }
 
