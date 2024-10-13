@@ -26,7 +26,7 @@ pub struct FormatterOptions {
 
 impl Default for FormatterOptions {
     fn default() -> Self {
-        Self { separate_sections: false, indent_size: 2, tabs: true }
+        Self { separate_sections: false, indent_size: 2, tabs: false }
     }
 }
 

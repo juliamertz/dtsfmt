@@ -32,8 +32,8 @@ pub fn lookahead<'a>(cursor: &'a TreeCursor) -> Option<Node<'a>> {
 
 pub fn print_indent(writer: &mut String, ctx: &Context) {
     let size = ctx.options.indent_size * ctx.depth;
-    let indent = match ctx.options.tabs {
-        true => "\t".repeat(size / 2), // TODO: check if this breaks with non-round values
+    let indent = match ctx.options.tabs && size % 2 == 0 {
+        true => "\t".repeat(size / 2),
         false => " ".repeat(size),
     };
 

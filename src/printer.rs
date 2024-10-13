@@ -33,7 +33,8 @@ fn traverse(
     match node.kind() {
         "comment" => {
             if !writer.ends_with('\n') {
-                // Add a newline before the comment if the previous node is not a comment
+                // Add a newline before the comment if the previous node is not
+                // a comment
                 if lookbehind(cursor).map_or(false, |n| n.kind() != "comment") {
                     sep(writer);
                 }
@@ -161,8 +162,8 @@ fn traverse(
             cursor.goto_parent();
         }
         "node" => {
-            // If the previous node is a labeled_item, then the labeled_item will
-            // contain the indentation rather than the node.
+            // If the previous node is a labeled_item, then the labeled_item
+            // will contain the indentation rather than the node.
             if lookbehind(cursor).map_or(false, |n| n.kind() != ":") {
                 print_indent(writer, ctx);
             }
@@ -182,10 +183,11 @@ fn traverse(
                 // so we can properly print the binding cells.
                 let ctx = match name {
                     "keymap" => ctx.keymap(),
+                    "underglow-layer" => ctx.underglow_layer(),
                     _ => ctx,
                 };
 
-                traverse(writer, &source, cursor, &ctx);
+                traverse(writer, source, cursor, &ctx);
             }
 
             // Node closing
@@ -232,9 +234,14 @@ fn traverse(
             cursor.goto_first_child();
 
             // Keymap bindings are a special snowflake
-            if ctx.keymap && ctx.bindings {
-                print_bindings(writer, source, cursor, ctx);
-                return;
+            if ctx.bindings {
+                if ctx.keymap {
+                    print_bindings(writer, source, cursor, ctx);
+                    return;
+                } else if ctx.underglow_layer {
+                    print_underglow_layer(writer, source, cursor, ctx);
+                    return;
+                }
             }
 
             writer.push('<');
@@ -270,6 +277,35 @@ fn traverse(
             }
         }
     };
+}
+
+fn collect_underglow_layer(
+    cursor: &mut TreeCursor,
+    source: &String,
+    ctx: &Context,
+) -> VecDeque<String> {
+    let mut buf: VecDeque<String> = VecDeque::new();
+
+    while cursor.goto_next_sibling() {
+        match cursor.node().kind() {
+            ">" => break,
+            _ => {
+                let text = get_text(source, cursor);
+                buf.push_back(text.to_string());
+            }
+        }
+    }
+
+    // Move the items from the temporary buffer into a new vector that contains
+    // the empty key spaces.
+    ctx.layout
+        .bindings
+        .iter()
+        .map(|is_key| match is_key {
+            1 => buf.pop_front().unwrap_or(String::new()),
+            _ => String::new(),
+        })
+        .collect()
 }
 
 fn collect_bindings(
@@ -339,16 +375,12 @@ fn calculate_sizes(buf: &VecDeque<String>, row_size: usize) -> Vec<usize> {
     sizes
 }
 
-fn print_bindings(
+fn print_layout(
     writer: &mut String,
-    source: &String,
-    cursor: &mut TreeCursor,
     ctx: &Context,
+    buf: VecDeque<String>,
+    padding: usize,
 ) {
-    cursor.goto_first_child();
-    writer.push_str("<");
-
-    let buf = collect_bindings(cursor, source, ctx);
     let row_size = ctx.layout.row_size();
     let sizes = calculate_sizes(&buf, row_size);
 
@@ -364,17 +396,46 @@ fn print_bindings(
         // Don't add padding to the last binding in the row
         let padding = match (i + 1) % row_size == 0 {
             true => 0,
-            false => sizes[col] + 3,
+            false => sizes[col] + padding,
         };
 
-        writer.push_str(&pad_right(&item, padding));
+        writer.push_str(&pad_right(item, padding));
     });
+}
 
+fn print_bindings(
+    writer: &mut String,
+    source: &String,
+    cursor: &mut TreeCursor,
+    ctx: &Context,
+) {
+    cursor.goto_first_child();
+    writer.push('<');
+
+    let buf = collect_bindings(cursor, source, ctx);
+    print_layout(writer, ctx, buf, 3);
     // Close the bindings
     writer.push('\n');
     print_indent(writer, &ctx.dec(1));
     writer.push('>');
 
+    cursor.goto_parent();
+}
+
+fn print_underglow_layer(
+    writer: &mut String,
+    source: &String,
+    cursor: &mut TreeCursor,
+    ctx: &Context,
+) {
+    cursor.goto_first_child();
+    writer.push('<');
+    let buf = collect_underglow_layer(cursor, source, ctx);
+    print_layout(writer, ctx, buf, 1);
+    // Close the bindings
+    writer.push('\n');
+    print_indent(writer, &ctx.dec(1));
+    writer.push('>');
     cursor.goto_parent();
 }
 
@@ -399,8 +460,9 @@ pub fn print(source: &String, config: &Config) -> String {
         depth: 0,
         bindings: false,
         keymap: false,
+        underglow_layer: false,
         layout: &layout,
-        options: &config.options
+        options: &config.options,
     };
 
     // The first node is the root document node, so we have to traverse all it's

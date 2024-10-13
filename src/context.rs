@@ -3,7 +3,10 @@ use crate::layouts::KeyboardLayout;
 
 pub struct Context<'a> {
     pub depth: usize,
+
     pub keymap: bool,
+    pub underglow_layer: bool,
+
     pub bindings: bool,
     pub layout: &'a KeyboardLayout,
     pub options: &'a FormatterOptions,
@@ -24,6 +27,10 @@ impl<'a> Context<'a> {
 
     pub fn keymap(&self) -> Self {
         Self { keymap: true, ..*self }
+    }
+
+    pub fn underglow_layer(&self) -> Self {
+        Self { underglow_layer: true, ..*self }
     }
 
     pub fn bindings(&self) -> Self {
