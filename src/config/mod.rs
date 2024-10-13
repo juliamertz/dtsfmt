@@ -14,8 +14,11 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn parse(cwd: &Path) -> Self {
-        let rc_file = find_rc_file(cwd).expect("Could not find config file");
+    pub fn parse(cwd: &Path, config_file: &Option<PathBuf>) -> Self {
+        let rc_file = match config_file {
+            Some(file) => file,
+            None => &find_rc_file(cwd).expect("Could not find config file"),
+        };
         let buf =
             fs::read_to_string(rc_file).expect("Failed to read config file");
 

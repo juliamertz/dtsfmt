@@ -30,6 +30,10 @@ struct Cli {
     #[arg(long)]
     stdin: bool,
 
+    /// Use configuration file at given path
+    #[arg(long)]
+    config_file: Option<PathBuf>,
+
     /// The file to format
     #[arg(index = 1, value_name = "FILE")]
     file_path: PathBuf,
@@ -91,7 +95,7 @@ fn format_stdin(cli: &Cli, config: &Config) -> bool {
 
 fn main() {
     let cli = Cli::parse();
-    let config = Config::parse(&cli.file_path.to_path_buf());
+    let config = Config::parse(&cli.file_path.to_path_buf(), &cli.config_file);
 
     let has_errors = if cli.stdin {
         format_stdin(&cli, &config)
