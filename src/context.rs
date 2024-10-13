@@ -1,7 +1,8 @@
 use crate::layouts::KeyboardLayout;
 
 pub struct Context<'a> {
-    pub indent: usize,
+    pub depth: usize,
+    pub indent_size: usize,
     pub keymap: bool,
     pub bindings: bool,
     pub layout: &'a KeyboardLayout,
@@ -9,15 +10,15 @@ pub struct Context<'a> {
 
 impl<'a> Context<'a> {
     pub fn with_indent(&self, indent: usize) -> Self {
-        Self { indent, ..*self }
+        Self { depth: indent, ..*self }
     }
 
     pub fn inc(&self, increment: usize) -> Self {
-        Self { indent: self.indent + increment, ..*self }
+        Self { depth: self.depth + increment, ..*self }
     }
 
     pub fn dec(&self, decrement: usize) -> Self {
-        Self { indent: self.indent - decrement, ..*self }
+        Self { depth: self.depth - decrement, ..*self }
     }
 
     pub fn keymap(&self) -> Self {
