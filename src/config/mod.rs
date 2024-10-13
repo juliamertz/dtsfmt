@@ -1,16 +1,33 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::fs;
+use std::path::{Path, PathBuf};
+
+use serde::Deserialize;
 
 use crate::layouts::KeyboardLayoutType;
-use serde::Deserialize;
 
 mod constants;
 
 #[derive(Deserialize)]
 pub struct Config {
     pub layout: KeyboardLayoutType,
+    #[serde(default)]
+    pub options: FormatterOptions,
+}
+
+#[derive(Deserialize)]
+pub struct FormatterOptions {
+    #[serde(default)]
+    pub separate_sections: bool,
+    #[serde(default)]
+    pub indent_size: usize,
+    #[serde(default)]
+    pub tabs: bool,
+}
+
+impl Default for FormatterOptions {
+    fn default() -> Self {
+        Self { separate_sections: false, indent_size: 2, tabs: false }
+    }
 }
 
 impl Config {
@@ -20,6 +37,10 @@ impl Config {
             fs::read_to_string(rc_file).expect("Failed to read config file");
 
         toml::from_str(&buf).expect("Failed to parse config file")
+    }
+
+    pub fn with_defaults(layout: KeyboardLayoutType) -> Self {
+        Self { layout, options: FormatterOptions::default() }
     }
 }
 

@@ -2,11 +2,17 @@ use std::collections::VecDeque;
 
 use tree_sitter::TreeCursor;
 
-use crate::{
-    context::Context,
-    layouts::{self, KeyboardLayoutType},
-    parser::parse,
-    utils::{get_text, lookahead, lookbehind, pad_right, print_indent, sep},
+use crate::config::Config;
+use crate::context::Context;
+use crate::layouts::{self};
+use crate::parser::parse;
+use crate::utils::{
+    get_text,
+    lookahead,
+    lookbehind,
+    pad_right,
+    print_indent,
+    sep,
 };
 
 fn is_preproc(n: &tree_sitter::Node) -> bool {
@@ -26,9 +32,12 @@ fn traverse(
 
     match node.kind() {
         "comment" => {
-            // Add a newline before the comment if the previous node is not a comment
-            if lookbehind(cursor).map_or(false, |n| n.kind() != "comment") {
-                sep(writer);
+            if !writer.ends_with('\n') {
+                // Add a newline before the comment if the previous node is not
+                // a comment
+                if lookbehind(cursor).map_or(false, |n| n.kind() != "comment") {
+                    sep(writer);
+                }
             }
 
             print_indent(writer, ctx);
@@ -147,8 +156,8 @@ fn traverse(
             cursor.goto_parent();
         }
         "node" => {
-            // If the previous node is a labeled_item, then the labeled_item will
-            // contain the indentation rather than the node.
+            // If the previous node is a labeled_item, then the labeled_item
+            // will contain the indentation rather than the node.
             if lookbehind(cursor).map_or(false, |n| n.kind() != ":") {
                 print_indent(writer, ctx);
             }
@@ -364,14 +373,31 @@ fn print_bindings(
     cursor.goto_parent();
 }
 
-pub fn print(source: &String, layout: &KeyboardLayoutType) -> String {
+fn at_separator(cursor: &TreeCursor) -> bool {
+    let current = cursor.node();
+    let prev = match lookbehind(cursor) {
+        Some(node) => node,
+        None => return false,
+    };
+
+    prev.kind() != "comment"
+        && current.kind() != prev.kind()
+        && !is_preproc(&current)
+}
+
+pub fn print(source: &String, config: &Config) -> String {
     let mut writer = String::new();
     let tree = parse(source.clone());
     let mut cursor = tree.walk();
 
-    let layout = layouts::get_layout(layout);
-    let ctx =
-        Context { indent: 0, bindings: false, keymap: false, layout: &layout };
+    let layout = layouts::get_layout(&config.layout);
+    let ctx = Context {
+        indent: 0,
+        bindings: false,
+        keymap: false,
+        layout: &layout,
+        options: &config.options,
+    };
 
     // The first node is the root document node, so we have to traverse all it's
     // children with the same indentation level.
@@ -379,6 +405,13 @@ pub fn print(source: &String, layout: &KeyboardLayoutType) -> String {
     traverse(&mut writer, &source, &mut cursor, &ctx);
 
     while cursor.goto_next_sibling() {
+        if config.options.separate_sections
+            && at_separator(&cursor)
+            && !writer.ends_with("\n\n")
+        {
+            writer.push('\n');
+        }
+
         traverse(&mut writer, &source, &mut cursor, &ctx);
     }
 

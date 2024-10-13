@@ -1,3 +1,4 @@
+use crate::config::FormatterOptions;
 use crate::layouts::KeyboardLayout;
 
 pub struct Context<'a> {
@@ -5,6 +6,7 @@ pub struct Context<'a> {
     pub keymap: bool,
     pub bindings: bool,
     pub layout: &'a KeyboardLayout,
+    pub options: &'a FormatterOptions,
 }
 
 impl<'a> Context<'a> {

@@ -31,9 +31,13 @@ pub fn lookahead<'a>(cursor: &'a TreeCursor) -> Option<Node<'a>> {
 }
 
 pub fn print_indent(writer: &mut String, ctx: &Context) {
-    if let Ok(size) = ctx.indent.try_into() {
-        writer.push_str("  ".repeat(size).as_str());
-    }
+    let size = ctx.options.indent_size * ctx.indent;
+    let indent = match ctx.options.tabs {
+        true => "\t".repeat(size / 2), // TODO: check if this breaks with non-round values
+        false => " ".repeat(size),
+    };
+
+    writer.push_str(indent.as_str());
 }
 
 pub fn sep(writer: &mut String) {
