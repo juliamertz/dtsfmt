@@ -4,17 +4,8 @@ Auto formatter for device tree files.
 
 ## Installation
 
-You can install dtsfmt by running the install script which will download
-the [latest release](https://github.com/mskelton/dtsfmt/releases/latest).
-
 ```bash
-curl -LSfs https://go.mskelton.dev/dtsfmt/install | sh
-```
-
-Or you can build from source.
-
-```bash
-git clone --recurse-submodules https://github.com/mskelton/dtsfmt.git
+git clone --recurse-submodules https://github.com/juliamertz/dtsfmt.git
 cd dtsfmt
 cargo install --path .
 ```
@@ -38,6 +29,7 @@ layout = "kinesis:adv360" # required
 [options]
 separate_sections = false # print newline between sections
 indent_size = 2
+tabs = true
 ```
 
 ## Ignoring code
@@ -67,3 +59,8 @@ You can change the way dtsfmt emits the changes with the `--emit` flag.
 ```bash
 dtsfmt --emit=stdout
 ```
+
+### `--config-file`
+
+Instead of playing your configuration file at your project directory's root,
+you can pass a file path with `--config-file <path>` which will be used instead
