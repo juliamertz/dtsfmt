@@ -46,6 +46,7 @@ fn format_fs(cli: &Cli, config: &Config) -> bool {
     let mut types = TypesBuilder::new();
     types.add_defaults();
     types.add("devicetree", "*.keymap").unwrap();
+    types.add("devicetree", "*.dts").unwrap();
     types.select("devicetree");
 
     for result in WalkBuilder::new(&cli.file_path)
