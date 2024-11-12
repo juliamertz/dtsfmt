@@ -39,14 +39,16 @@ struct Cli {
     file_path: PathBuf,
 }
 
+static FILETYPES: [&str; 3] = ["keymap", "dts", "dtsi"];
 fn format_fs(cli: &Cli, config: &Config) -> bool {
     let mut emitter = create_emitter(false);
     let mut has_errors = false;
 
     let mut types = TypesBuilder::new();
     types.add_defaults();
-    types.add("devicetree", "*.keymap").unwrap();
-    types.add("devicetree", "*.dts").unwrap();
+    for filetype in FILETYPES {
+        types.add("devicetree", &format!("*.{}", filetype)).unwrap();
+    }
     types.select("devicetree");
 
     for result in WalkBuilder::new(&cli.file_path)
