@@ -279,6 +279,43 @@ fn traverse(
     };
 }
 
+fn collect_underglow_binding(
+    cursor: &mut TreeCursor,
+    source: &String,
+    ctx: &Context,
+) -> String {
+    let mut result = String::new();
+
+    let text = get_text(source, cursor);
+    match text {
+        "&ug" => {
+            if !cursor.goto_next_sibling() {
+                panic!("expected a color value after &ug");
+            };
+            result.push_str("&ug");
+            result.push(' ');
+            let text = get_text(source, cursor);
+
+            if text.chars().all(|v| matches!(v, '-' | '_')) {
+                result.push_str("___");
+            } else {
+                result.push_str(text);
+            }
+        }
+        "&ug_nl" | "&ug_cl" | "&ug_sl" => {
+            cursor.goto_next_sibling();
+            let off_state = get_text(source, cursor);
+            cursor.goto_next_sibling();
+            let on_state = get_text(source, cursor);
+
+            result.push_str(format!("&ug_nl {off_state} {on_state}").as_str())
+        }
+        val => result.push_str(val),
+    };
+
+    result
+}
+
 fn collect_underglow_layer(
     cursor: &mut TreeCursor,
     source: &String,
@@ -289,6 +326,10 @@ fn collect_underglow_layer(
     while cursor.goto_next_sibling() {
         match cursor.node().kind() {
             ">" => break,
+            "reference" => {
+                let binding = collect_underglow_binding(cursor, source, ctx);
+                buf.push_back(binding);
+            }
             _ => {
                 let text = get_text(source, cursor);
                 buf.push_back(text.to_string());

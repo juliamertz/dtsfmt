@@ -1,0 +1,63 @@
+== should should reformat badly formatted code ==
+// underglow layer bindings
+/ {
+  underglow-layer {
+    compatible = "zmk,underglow-layer";
+
+    lower {
+      bindings = <
+        &ug ___    &ug ___  &ug ___    &ug ___    &ug ___                                                                                &ug ___             &ug ___           &ug ___           &ug ___    &ug ___
+        &ug ___    &ug PINK &ug PINK   &ug PINK   &ug PINK   &ug PINK                                                            &ug ___ &ug_nl WHITE ORANGE &ug ORANGE        &ug ORANGE        &ug ORANGE &ug RED
+        &ug PURPLE &ug ___  &ug ___    &ug ORANGE &ug ___    &ug ___                                                             &ug ___ &ug_nl RED YELLOW   &ug_nl RED YELLOW &ug_nl RED YELLOW &ug ORANGE &ug ___
+        &ug PURPLE &ug ___  &ug ORANGE &ug RED    &ug ORANGE &ug ___                                                             &ug ___ &ug_nl RED YELLOW   &ug_nl RED YELLOW &ug_nl RED YELLOW &ug ORANGE &ug ___
+        &ug BLUE   &ug ___  &ug RED    &ug RED    &ug RED    &ug ___  &ug_nl BLUE TEAL &ug ___   &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug_nl RED YELLOW   &ug_nl RED YELLOW &ug_nl RED YELLOW &ug RED    &ug BLUE
+        &ug ___    &ug ___  &ug ORANGE &ug ORANGE &ug ORANGE          &ug ___          &ug GREEN &ug ___ &ug ___ &ug ___ &ug ___         &ug_nl RED YELLOW   &ug_nl RED YELLOW &ug ORANGE        &ug RED    &ug ___
+      >;
+      layer-id = <LAYER_Lower>;
+    };
+
+    blank {
+      bindings = <
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___                                                                 &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___                                                 &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___                                                 &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___                                                 &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___         &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___         &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+      >;
+      layer-id = <LAYER_Lower>;
+    };
+
+  };
+};
+
+[expect]
+// underglow layer bindings
+/ {
+  underglow-layer {
+    compatible = "zmk,underglow-layer";
+
+    lower {
+      bindings = <
+        &ug ___    &ug ___  &ug ___    &ug ___    &ug ___                                                                                &ug ___             &ug ___           &ug ___           &ug ___    &ug ___
+        &ug ___    &ug PINK &ug PINK   &ug PINK   &ug PINK   &ug PINK                                                            &ug ___ &ug_nl WHITE ORANGE &ug ORANGE        &ug ORANGE        &ug ORANGE &ug RED
+        &ug PURPLE &ug ___  &ug ___    &ug ORANGE &ug ___    &ug ___                                                             &ug ___ &ug_nl RED YELLOW   &ug_nl RED YELLOW &ug_nl RED YELLOW &ug ORANGE &ug ___
+        &ug PURPLE &ug ___  &ug ORANGE &ug RED    &ug ORANGE &ug ___                                                             &ug ___ &ug_nl RED YELLOW   &ug_nl RED YELLOW &ug_nl RED YELLOW &ug ORANGE &ug ___
+        &ug BLUE   &ug ___  &ug RED    &ug RED    &ug RED    &ug ___  &ug_nl BLUE TEAL &ug ___   &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug_nl RED YELLOW   &ug_nl RED YELLOW &ug_nl RED YELLOW &ug RED    &ug BLUE
+        &ug ___    &ug ___  &ug ORANGE &ug ORANGE &ug ORANGE          &ug ___          &ug GREEN &ug ___ &ug ___ &ug ___ &ug ___         &ug_nl RED YELLOW   &ug_nl RED YELLOW &ug ORANGE        &ug RED    &ug ___
+      >;
+      layer-id = <LAYER_Lower>;
+    };
+    blank {
+      bindings = <
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___                                                                 &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___                                                 &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___                                                 &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___                                                 &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+        &ug ___ &ug ___ &ug ___ &ug ___ &ug ___         &ug ___ &ug ___ &ug ___ &ug ___ &ug ___ &ug ___         &ug ___ &ug ___ &ug ___ &ug ___ &ug ___
+      >;
+      layer-id = <LAYER_Lower>;
+    };
+  };
+};

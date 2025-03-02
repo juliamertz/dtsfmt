@@ -1,10 +1,14 @@
+use std::fmt::Display;
+use std::fs;
+use std::path::Path;
+
 use console::Style;
 use similar::{ChangeTag, TextDiff};
-use std::{fmt::Display, path::Path};
-
-use crate::{config::Config, layouts::KeyboardLayoutType, printer::print};
 
 use super::get_specs_in_dir;
+use crate::config::Config;
+use crate::layouts::KeyboardLayoutType;
+use crate::printer::print;
 
 struct FailedTestResult {
     expected: String,
@@ -47,13 +51,19 @@ pub fn run_specs(directory_path: &Path) {
     let test_count = specs.len();
     let mut failed_tests = Vec::new();
 
-    for (_, spec) in specs {
+    for (path, spec) in specs {
+        let layout_type = match path.file_name().and_then(|v| v.to_str()) {
+            Some("glove80.txt") => KeyboardLayoutType::Glove80,
+            Some("adv360.txt") | _ => KeyboardLayoutType::Adv360,
+        };
+
         let result = print(
             &spec.file_text,
-            &Config::with_defaults(KeyboardLayoutType::Adv360),
+            &Config::with_defaults(layout_type),
         );
 
         if result != spec.expected_text {
+            fs::write("./expected.txt", &result).unwrap();
             failed_tests.push(FailedTestResult {
                 expected: spec.expected_text.clone(),
                 actual: result,
