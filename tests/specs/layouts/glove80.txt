@@ -1,4 +1,4 @@
-== should should reformat badly formatted code ==
+== should reformat badly formatted code ==
 // underglow layer bindings
 / {
   underglow-layer {

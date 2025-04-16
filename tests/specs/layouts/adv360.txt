@@ -1,4 +1,4 @@
-== should should reformat badly formatted code ==
+== should reformat badly formatted code ==
 / {
 behaviors { dm: dual_mod_key {
       bindings = <  &kp  >,
