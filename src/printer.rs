@@ -302,13 +302,13 @@ fn collect_underglow_binding(
                 result.push_str(text);
             }
         }
-        "&ug_nl" | "&ug_cl" | "&ug_sl" => {
+        modifier @ "&ug_nl" | "&ug_cl" | "&ug_sl" => {
             cursor.goto_next_sibling();
             let off_state = get_text(source, cursor);
             cursor.goto_next_sibling();
             let on_state = get_text(source, cursor);
 
-            result.push_str(format!("&ug_nl {off_state} {on_state}").as_str())
+            result.push_str(format!("{modifier} {off_state} {on_state}").as_str())
         }
         val => result.push_str(val),
     };
